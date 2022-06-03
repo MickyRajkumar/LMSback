@@ -202,10 +202,30 @@ class SearchbookList(ListAPIView):
     search_fields = ['book_name']
 
 
+class SearchborrowList(ListAPIView):
+
+    queryset = borrow.objects.all()
+    serializer_class = borrowserializer
+    filter_backends = [SearchFilter]
+    search_fields = ['student']
+
+
+
+class searchCustomUser(ListAPIView):
+
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['user_name']
+
+
+
 class borrowList(ListAPIView):
 
     queryset = borrow.objects.all()
     serializer_class = borrowserializer
+    filter_backends = [SearchFilter]
+    search_fields = ['book']
 
     def get_queryset(self):
         borrow1 = borrow.objects.all()
@@ -229,6 +249,49 @@ class borrowList(ListAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+    def put(self, request,id=None):
+        if id:
+            borrow1 = borrow.objects.get(id=id)
+            serializer = borrowserializer(borrow1, data=request.data)
+            data = {}
+            if serializer.is_valid(raise_exception=True):
+                serializer.save();
+                data["status"] = "sucuess"
+                return Response(data)
+            else:  
+                data['status'] = "error"
+                return Response(data)
+
+    def patch(self, request, id=None, *args, **kwargs):
+        if id:
+            borrow1 = borrow.objects.get(id=id)
+            data = request.data
+
+            borrow1.mobile = data.get('mobile', borrow1.mobile)
+            borrow1.student = data.get('student', borrow1.student)
+            borrow1.issue_date = data.get('issue_date', borrow1.issue_date)
+            borrow1.due_date = data.get('due_date', borrow1.due_date)
+            borrow1.submit = data.get('submit', borrow1.submit)
+            borrow1.book = data.get('book', borrow1.book)
+            borrow1.address = data.get('address', borrow1.address)
+            
+
+            borrow1.save()
+            serializer = borrowserializer(borrow1)
+            return Response(serializer.data)
+
+    def delete(self, request,id=None):
+        if id:
+            borrow1 = borrow.objects.get(id=id)
+            serializer = borrow1.delete()
+            data = {}
+            if borrow1:
+                data["status"] = "sucuess"
+                return Response(data)
+            else:  
+                data['status'] = "error"
+                return Response(data)
 
 
 class BookCatagoryList(ListAPIView):

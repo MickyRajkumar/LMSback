@@ -42,13 +42,18 @@ class bookserializer(serializers.ModelSerializer):
 
 
 class borrowserializer(serializers.ModelSerializer):
-    book = serializers.StringRelatedField()
-    student = serializers.StringRelatedField()
+    
 
     class Meta:
         model = borrow
         fields = '__all__'
         #depth = 1
+
+    def to_representation(self, instance):
+        rep = super(borrowserializer, self).to_representation(instance)
+        rep['student'] = instance.student.user_name
+        rep['book'] = instance.book.book_name
+        return rep
 
 
 class BookCategoryserializer(serializers.ModelSerializer):
@@ -58,10 +63,17 @@ class BookCategoryserializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class Commentserializer(serializers.ModelSerializer):
-    student = NewUserSerializer(many=False, read_only=True)
+    # student = NewUserSerializer(many=False, read_only=True)
+    # student = serializers.ReadOnlyField(source='NewUser')
+    # student = serializers.StringRelatedField()
     class Meta:
         model = comment
-        fields = '__all__'
+        fields = ('id','comment','time','book','student')
         # depth = 1
-        exclude = []
+        # exclude = []
+
+    def to_representation(self, instance):
+        rep = super(Commentserializer, self).to_representation(instance)
+        rep['student'] = instance.student.user_name
+        return rep
 

@@ -65,18 +65,20 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
         
 class BookCategory(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(max_length=200)
+    description = models.TextField(max_length=500)
     
 
     def __str__(self):
         return self.name
 
 class book(models.Model):
-    book_name = models.CharField(max_length=50)
-    author_name = models.CharField(max_length=50)
-    description = models.TextField(max_length=200)
+    book_name = models.CharField(max_length=100)
+    author_name = models.CharField(max_length=100)
+    description = models.TextField(max_length=500)
     image = models.ImageField(upload_to ='images/', default=None, blank=True)
     stock = models.IntegerField(default=1)
+    edition = models.IntegerField(default=1, blank=True,null=True)
+    rack_no = models.IntegerField(default=None, blank=True, null=True)
     category = models.ForeignKey(BookCategory, on_delete=models.CASCADE, null=True)
 
 
@@ -94,6 +96,7 @@ class borrow(models.Model):
     address = models.CharField(max_length=50)
     issue_date = models.DateTimeField(default=now)
     due_date = models.DateTimeField(default = get_deadline())
+    submit = models.BooleanField(default=False, blank=True)
 
     def __str__(self):
         return self.student.user_name
