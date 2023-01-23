@@ -1,1 +1,2 @@
-env
+/LMS/__pycache__
+/myapp/migrations/__pycache_
